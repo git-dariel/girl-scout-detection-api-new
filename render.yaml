@@ -15,8 +15,19 @@ services:
         value: 2
       - key: MALLOC_ARENA_MAX
         value: 2
+      - key: WEB_CONCURRENCY
+        value: 1
+      - key: WORKER_TIMEOUT
+        value: 300
+      - key: TF_NUM_INTEROP_THREADS
+        value: 1
+      - key: TF_NUM_INTRAOP_THREADS
+        value: 2
+      - key: TF_ENABLE_ONEDNN_OPTS
+        value: 1
     disk:
       name: model-storage
       mountPath: /opt/render/project/src/models
-      sizeGB: 1
+      sizeGB: 2
     plan: standard
+    instanceType: basic

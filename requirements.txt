@@ -1,11 +1,12 @@
-Flask
+Flask==2.3.3
+Werkzeug==2.3.7
 opencv-python
 numpy
 python-dotenv
 cloudinary==1.36.0
 flask-cors
 gunicorn==21.2.0
-flasgger
+flasgger==0.9.7.1
 tensorflow==2.15.0
 tensorboard==2.15.0
 matplotlib==3.8.2
