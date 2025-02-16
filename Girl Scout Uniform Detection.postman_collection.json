@@ -1,0 +1,139 @@
+{
+	"info": {
+		"_postman_id": "6799b7c3-9870-427a-9d91-dc654b1d9c8a",
+		"name": "Girl Scout Uniform Detection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30947035",
+		"_collection_link": "https://westcoast-dev.postman.co/workspace/GIRL-SCOUT-DETECTION-WORKSPACE~9b4c14a8-4872-47d6-bc26-9b4339f8e3c7/collection/30947035-6799b7c3-9870-427a-9d91-dc654b1d9c8a?action=share&source=collection_link&creator=30947035"
+	},
+	"item": [
+		{
+			"name": "Girl Scout Uniform Detection",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var template = `\r",
+							"<style type=\"text/css\">\r",
+							"    .tftable {font-size:14px;color:#333333;width:100%;border-width: 1px;border-color: #87ceeb;border-collapse: collapse;}\r",
+							"    .tftable th {font-size:18px;background-color:#87ceeb;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;text-align:left;}\r",
+							"    .tftable tr {background-color:#ffffff;}\r",
+							"    .tftable td {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;}\r",
+							"    .tftable tr:hover {background-color:#e0ffff;}\r",
+							"</style>\r",
+							"\r",
+							"<table class=\"tftable\" border=\"1\">\r",
+							"    <tr>\r",
+							"        <th>Confidence Score</th>\r",
+							"        <th>Details</th>\r",
+							"        <th>Is Authentic</th>\r",
+							"        <th>Message</th>\r",
+							"        <th>Original Image URL</th>\r",
+							"        <th>Processed Image URL</th>\r",
+							"    </tr>\r",
+							"    <tr>\r",
+							"        <td>{{response.confidence_score}}</td>\r",
+							"        <td>{{#if response.details}}{{response.details}}{{else}}N/A{{/if}}</td>\r",
+							"        <td>{{response.is_authentic}}</td>\r",
+							"        <td>{{#if response.message}}{{response.message}}{{else}}N/A{{/if}}</td>\r",
+							"        <td>{{#if response.original_image_url}}{{response.original_image_url}}{{else}}N/A{{/if}}</td>\r",
+							"        <td>{{#if response.processed_image_url}}{{response.processed_image_url}}{{else}}N/A{{/if}}</td>\r",
+							"    </tr>\r",
+							"</table>\r",
+							"`;\r",
+							"\r",
+							"function constructVisualizerPayload() {\r",
+							"    return { response: pm.response.json() }\r",
+							"}\r",
+							"\r",
+							"pm.visualizer.set(template, constructVisualizerPayload());"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "postman-cloud:///1efe2468-7ae2-4620-896f-7b933e393c57"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/detect-uniform",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"detect-uniform"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Result Detection",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/get/all/detected-uniforms",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"get",
+						"all",
+						"detected-uniforms"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Result Detection Copy",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/get/detected-uniforms/statistics",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"get",
+						"detected-uniforms",
+						"statistics"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
