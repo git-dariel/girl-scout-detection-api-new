@@ -171,18 +171,6 @@ Thumbs.db
 # Uploaded files
 uploads/
 
-# Model folders and large files
-models/*
-!models/model_optimized.tflite
-!models/labels.txt
-!models/keras_model.h5
-*.h5
-*.tflite
-*.weights
-*.pt
-*.pth
-*.onnx
-
 # Large data files
 *.zip
 *.tar.gz
