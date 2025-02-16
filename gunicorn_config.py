@@ -3,10 +3,10 @@ workers = 1
 threads = 1
 timeout = 300
 worker_class = "gthread"
-max_requests = 10
-max_requests_jitter = 3
+max_requests = 5
+max_requests_jitter = 2
 worker_tmp_dir = "/dev/shm"
 preload_app = True
-# Reduce memory usage
-worker_connections = 100
-keepalive = 5 
+# Reduce memory usage further
+worker_connections = 50
+keepalive = 2 

@@ -8,10 +8,12 @@ from app.utils.image_processing_utils import (
     process_image_with_executor
 )
 from app.services.detected_uniform_service import DetectedUniformService
+from app.services.image_processing_service import ImageProcessingService
 import time
 import os
 import cv2
 from functools import lru_cache
+import gc
 
 image_route = Blueprint("image_route", __name__)
 
@@ -44,9 +46,20 @@ tensorboard_logger = TensorBoardLogger()
 def detect_uniform():
     try:
         start_time = time.time()
+        print("Starting image processing...")
+        
+        # Load image in chunks to reduce memory usage
         image, error = handle_file_upload()
         if error:
             return jsonify({"error": error}), 400
+        
+        # Process image in smaller batches
+        result = ImageProcessingService.process_image(image)
+        print("Image processing completed successfully")
+        
+        # Free up memory after processing
+        del image
+        gc.collect()
         
         # Resize and optimize image
         image = resize_image_if_needed(image)
@@ -115,6 +128,7 @@ def detect_uniform():
         return jsonify(response_data)
         
     except Exception as e:
+        print(f"Error in detect_uniform: {str(e)}")
         current_app.logger.error(f"Unexpected error in detect_uniform: {str(e)}")
         return jsonify({"error": "An unexpected error occurred"}), 500
 

@@ -38,15 +38,29 @@ class ModelLoader:
                 # Check if optimized TFLite model exists
                 if os.path.exists(cls._tflite_model_path):
                     print(f"Loading TFLite model from: {cls._tflite_model_path}")
-                    # Read model in chunks to reduce memory usage
-                    chunk_size = 1024 * 1024  # 1MB chunks
-                    tflite_model = bytearray()
-                    with open(cls._tflite_model_path, 'rb') as f:
-                        while True:
-                            chunk = f.read(chunk_size)
-                            if not chunk:
-                                break
-                            tflite_model.extend(chunk)
+                    # Load model in smaller chunks
+                    chunk_size = 512 * 1024  # 512KB chunks
+                    tflite_model = b""
+                    with open(cls._tflite_model_path, "rb") as f:
+                        while chunk := f.read(chunk_size):
+                            tflite_model += chunk
+                            gc.collect()
+                
+                    # Initialize interpreter with minimal threads
+                    cls._interpreter = tf.lite.Interpreter(
+                        model_content=tflite_model,
+                        num_threads=1  # Use only 1 thread
+                    )
+                    cls._interpreter.allocate_tensors()
+                    
+                    # Free up memory
+                    del tflite_model
+                    gc.collect()
+                
+                    # Cache input and output details
+                    cls._input_details = cls._interpreter.get_input_details()
+                    cls._output_details = cls._interpreter.get_output_details()
+                
                 else:
                     # Load and optimize the model
                     if not os.path.exists(cls._base_model_path):
@@ -89,23 +103,28 @@ class ModelLoader:
                     del cls._model
                     gc.collect()
                 
-                # Create TF Lite interpreter with optimizations and reduced memory usage
-                cls._interpreter = tf.lite.Interpreter(
-                    model_content=bytes(tflite_model),
-                    num_threads=2,  # Reduce thread count to save memory
-                    experimental_preserve_all_tensors=False
-                )
+                    # Load model in smaller chunks
+                    chunk_size = 512 * 1024  # 512KB chunks
+                    tflite_model = b""
+                    with open(cls._tflite_model_path, "rb") as f:
+                        while chunk := f.read(chunk_size):
+                            tflite_model += chunk
+                            gc.collect()
                 
-                # Clear model data from memory
-                del tflite_model
-                gc.collect()
+                    # Initialize interpreter with minimal threads
+                    cls._interpreter = tf.lite.Interpreter(
+                        model_content=tflite_model,
+                        num_threads=1  # Use only 1 thread
+                    )
+                    cls._interpreter.allocate_tensors()
+                    
+                    # Free up memory
+                    del tflite_model
+                    gc.collect()
                 
-                # Pre-allocate tensors
-                cls._interpreter.allocate_tensors()
-                
-                # Cache input and output details
-                cls._input_details = cls._interpreter.get_input_details()
-                cls._output_details = cls._interpreter.get_output_details()
+                    # Cache input and output details
+                    cls._input_details = cls._interpreter.get_input_details()
+                    cls._output_details = cls._interpreter.get_output_details()
                 
             except Exception as e:
                 raise RuntimeError(f"Failed to load model: {str(e)}")
