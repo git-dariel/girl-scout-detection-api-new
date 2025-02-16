@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: girl-scout-detection-api
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn run:application -c gunicorn_config.py
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0 
