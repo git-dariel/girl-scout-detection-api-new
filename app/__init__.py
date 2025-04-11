@@ -13,19 +13,24 @@ import os
 def create_app():
     app = Flask(__name__)
     
-    # Configure CORS
-    cors = CORS(app, resources={
-        r"/*": {
-            "origins": [
-                "https://smart-scouts.vercel.app",
-                "http://localhost:3000"  # For local development
-            ],
-            "methods": ["GET", "POST", "OPTIONS"],
-            "allow_headers": ["Content-Type", "Authorization"]
-        }
-    })
+    # Configure CORS with more permissive settings
+    CORS(app, 
+         origins=["https://smart-scouts.vercel.app", "http://localhost:3000"],
+         supports_credentials=True,
+         allow_headers=["Content-Type", "Authorization", "Access-Control-Allow-Origin"],
+         methods=["GET", "POST", "OPTIONS", "PUT", "DELETE"],
+         expose_headers=["Content-Range", "X-Content-Range"])
     
     app.config.from_object(Config)
+
+    # Add CORS headers to all responses
+    @app.after_request
+    def after_request(response):
+        response.headers.add('Access-Control-Allow-Origin', 'https://smart-scouts.vercel.app')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
+        return response
 
     # Register blueprints
     app.register_blueprint(image_route)
