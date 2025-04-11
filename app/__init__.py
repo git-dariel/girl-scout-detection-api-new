@@ -12,7 +12,19 @@ import os
 
 def create_app():
     app = Flask(__name__)
-    CORS(app)
+    
+    # Configure CORS
+    cors = CORS(app, resources={
+        r"/*": {
+            "origins": [
+                "https://smart-scouts.vercel.app",
+                "http://localhost:3000"  # For local development
+            ],
+            "methods": ["GET", "POST", "OPTIONS"],
+            "allow_headers": ["Content-Type", "Authorization"]
+        }
+    })
+    
     app.config.from_object(Config)
 
     # Register blueprints
