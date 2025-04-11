@@ -15,9 +15,9 @@ def create_app():
     
     # Configure CORS with more permissive settings
     CORS(app, 
-         origins=["https://smart-scouts.vercel.app", "http://localhost:5173", "http://127.0.0.1:5173"],
+         resources={r"/api/*": {"origins": ["https://smart-scouts.vercel.app", "http://localhost:5173", "http://127.0.0.1:5173"]}},
          supports_credentials=True,
-         allow_headers=["Content-Type", "Authorization", "Access-Control-Allow-Origin"],
+         allow_headers=["Content-Type", "Authorization", "Access-Control-Allow-Origin", "X-Requested-With"],
          methods=["GET", "POST", "OPTIONS", "PUT", "DELETE"],
          expose_headers=["Content-Range", "X-Content-Range"])
     
@@ -28,11 +28,17 @@ def create_app():
     def after_request(response):
         origin = request.headers.get('Origin')
         allowed_origins = ["https://smart-scouts.vercel.app", "http://localhost:5173", "http://127.0.0.1:5173"]
+        
         if origin in allowed_origins:
-            response.headers.add('Access-Control-Allow-Origin', origin)
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-        response.headers.add('Access-Control-Allow-Credentials', 'true')
+            response.headers.set("Access-Control-Allow-Origin", origin)
+            response.headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
+            response.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With")
+            response.headers.set("Access-Control-Allow-Credentials", "true")
+            
+        if request.method == "OPTIONS":
+            response.headers.set("Access-Control-Max-Age", "3600")
+            return response
+
         return response
 
     # Register blueprints
